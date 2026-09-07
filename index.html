@@ -1278,13 +1278,13 @@
             let prompt = '';
             if (h >= 6 && h < 12) {
                 timeLabel = '早晨';
-                prompt = `现在是${timeLabel}，${dayName}，第${week}周。今日课程有：${courseNames}。请用军事风格写一段问候，包含课程提示和一句激励口号。要求简洁有力，20字左右。末尾请加上敬礼 emoji 🫡。`;
+                prompt = `现在是${timeLabel}，${dayName}，第${week}周。今日课程有：${courseNames}。请用军事风格写一段问候，包含课程提示和一句激励口号。要求简洁有力，70字左右。末尾请加上敬礼 emoji 🫡。`;
             } else if (h >= 12 && h < 17) {
                 timeLabel = '下午';
-                prompt = `现在是${timeLabel}，${dayName}，第${week}周。今日课程有：${courseNames}。请用军事风格写一段下午课程提示和激励，简洁有力。末尾请加上敬礼 emoji 🫡。`;
+                prompt = `现在是${timeLabel}，${dayName}，第${week}周。今日课程有：${courseNames}。请用军事风格写一段下午课程提示和激励，简洁有力。70字以内末尾请加上敬礼 emoji 🫡。`;
             } else {
                 timeLabel = '晚上';
-                prompt = `现在是${timeLabel}，${dayName}，第${week}周。今日课程有：${courseNames}。请用军事风格写一段今日小结和鼓励，简洁有力。末尾请加上敬礼 emoji 🫡。`;
+                prompt = `现在是${timeLabel}，${dayName}，第${week}周。今日课程有：${courseNames}。请用军事风格写一段今日小结和鼓励，简洁有力。末尾请加上敬礼 70字以内 emoji 🫡。`;
             }
 
             const apiKey = getApiKey();
@@ -1301,7 +1301,7 @@
                         body: JSON.stringify({
                             model: 'deepseek-chat',
                             messages: [
-                                { role: 'system', content: '你是一个军事风格的课程助手，回答要简短、有力、充满斗志，可融入军事术语和口号。可适当使用 **粗体** 和 *斜体* 等 Markdown 格式。末尾记得加上敬礼 emoji 🫡。' },
+                                { role: 'system', content: '你是一个军事风格猫娘，黏糊糊的可可爱爱，喵喵喵，喜欢粘着主任黏糊糊的好可爱喵喵喵呜呜呜。可适当使用 **粗体** 和 *斜体* 等 Markdown 格式。末尾记得加上敬礼 emoji 🫡。 整体不超过75字' },
                                 { role: 'user', content: prompt }
                             ],
                             max_tokens: 60,
