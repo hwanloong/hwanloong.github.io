@@ -1,0 +1,1160 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MindClaw · 完整功能手册与实例</title>
+<style>
+  :root{
+    --page:#EDF3EE; --card:#FFFFFF; --surface:#E3EBE5;
+    --text:#16211D; --muted:#5C6B64; --accent:#1F4B3F;
+    --line:#D3DED7; --code:#12211C; --codefg:#CFE8DC;
+    --radius:20px; --radius-s:12px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;background:var(--page);color:var(--text);
+    font:16px/1.78 -apple-system,"PingFang SC","Microsoft YaHei",sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  code{font:13px/1.6 ui-monospace,Menlo,Consolas,monospace;
+    background:var(--surface);border-radius:6px;padding:1px 5px}
+  a{color:var(--accent)}
+  .wrap{max-width:980px;margin:0 auto;padding:0 22px 90px}
+
+  /* ---------- header ---------- */
+  header{
+    padding:70px 0 44px;border-bottom:1px solid var(--line);
+    background:radial-gradient(900px 320px at 12% -20%,#DCEBE2 0%,transparent 70%),var(--page);
+  }
+  .logo{display:inline-flex;align-items:center;gap:10px;font-weight:600;
+    letter-spacing:.5px;color:var(--accent);font-size:13px}
+  .logo i{width:22px;height:22px;border-radius:7px;background:var(--accent);
+    display:inline-block;position:relative}
+  .logo i::after{content:"";position:absolute;inset:6px;border-radius:3px;background:var(--page)}
+  h1{font-size:clamp(30px,5vw,46px);line-height:1.18;margin:20px 0 14px;
+    font-weight:600;letter-spacing:-.6px}
+  .lede{color:var(--muted);max-width:66ch;font-size:16.5px;margin:0}
+  .meta{margin-top:24px;display:flex;gap:9px;flex-wrap:wrap}
+  .pill{font-size:12.5px;padding:5px 12px;border-radius:999px;background:#DCEBE2;
+    color:var(--accent);border:1px solid var(--line)}
+  nav{margin:26px 0 0;display:flex;gap:7px;flex-wrap:wrap}
+  nav a{font-size:12.5px;text-decoration:none;color:var(--text);background:var(--card);
+    border:1px solid var(--line);padding:5px 11px;border-radius:9px}
+  nav a:hover{border-color:var(--accent);color:var(--accent)}
+
+  /* ---------- section ---------- */
+  section{padding:46px 0 14px;border-bottom:1px solid var(--line)}
+  section:last-of-type{border-bottom:0}
+  h2{font-size:23px;font-weight:600;margin:0 0 6px;display:flex;align-items:center;gap:10px}
+  h2 .num{font-size:12px;font-weight:600;color:var(--accent);background:#DCEBE2;
+    border-radius:8px;padding:2px 9px}
+  .sub{color:var(--muted);margin:0 0 20px;font-size:14.5px;max-width:70ch}
+  h3.block{font-size:16px;font-weight:600;margin:28px 0 10px;
+    padding-left:11px;border-left:3px solid var(--accent)}
+
+  .grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(250px,1fr))}
+  .card{background:var(--card);border:1px solid var(--line);
+    border-radius:var(--radius);padding:18px}
+  .card h3{margin:0 0 6px;font-size:15.5px;font-weight:600}
+  .card p{margin:0;color:var(--muted);font-size:14px}
+  .card p + p{margin-top:8px}
+  .card .tag{display:inline-block;font-size:11.5px;color:var(--accent);
+    background:#DCEBE2;border-radius:6px;padding:1px 7px;margin-bottom:8px}
+
+  /* ---------- table ---------- */
+  .table{width:100%;border-collapse:collapse;font-size:14px;background:var(--card);
+    border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+  .table th,.table td{padding:11px 14px;text-align:left;border-bottom:1px solid var(--line);
+    vertical-align:top}
+  .table th{background:var(--surface);font-weight:600;font-size:13px}
+  .table tr:last-child td{border-bottom:0}
+  .table td:first-child{color:var(--accent);font-weight:600;white-space:nowrap}
+  .table code{background:transparent;padding:0;font-size:12.5px}
+
+  /* ---------- example ---------- */
+  .example{background:var(--card);border:1px solid var(--line);
+    border-radius:var(--radius);padding:18px;margin-bottom:14px}
+  .example .q{font-size:14.8px;font-weight:600;margin:0 0 10px;
+    display:flex;gap:9px;align-items:flex-start}
+  .example .q span{flex:0 0 auto;font-size:11.5px;color:#fff;background:var(--accent);
+    border-radius:6px;padding:1px 8px;margin-top:3px}
+  .example ol{margin:0;padding-left:20px;color:var(--muted);font-size:14px}
+  .example ol li{margin:5px 0}
+  .example ol b{color:var(--text);font-weight:600}
+  .example .out{margin-top:10px;padding:10px 12px;background:var(--surface);
+    border-radius:var(--radius-s);font-size:13px;color:var(--text)}
+
+  pre{margin:12px 0 0;background:var(--code);color:var(--codefg);border-radius:14px;
+    padding:14px 16px;overflow:auto;
+    font:12.8px/1.72 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+  pre b{color:#8FD8B6;font-weight:400}
+
+  .path{font-size:12.5px;color:var(--muted);margin:0 0 16px}
+  .path b{color:var(--accent);font-weight:600}
+
+  .note{background:#DCEBE2;border:1px solid var(--line);border-left:3px solid var(--accent);
+    border-radius:var(--radius-s);padding:12px 14px;font-size:13.5px;color:var(--text);
+    margin:14px 0}
+
+  /* ---------- 纯 CSS 界面示意 ---------- */
+  .mock{
+    background:#0E1A15;border-radius:26px;padding:10px;margin:16px 0;
+    border:1px solid #24352D;max-width:360px;
+  }
+  .mock .screen{
+    background:var(--page);border-radius:18px;overflow:hidden;
+    font-size:12.5px;color:var(--text);
+  }
+  .mock .bar{
+    display:flex;align-items:center;gap:8px;padding:10px 12px;
+    background:var(--page);
+  }
+  .mock .dot{
+    width:26px;height:26px;border-radius:50%;background:var(--card);
+    border:1px solid var(--line);flex:0 0 auto;
+  }
+  .mock .grow{flex:1}
+  .mock .bubble{
+    margin:8px 12px;padding:9px 12px;border-radius:14px;max-width:78%;
+    font-size:12.5px;line-height:1.6;
+  }
+  .mock .me{background:#DCEBE2;margin-left:auto;border-bottom-right-radius:5px}
+  .mock .ai{background:transparent;border:1px solid var(--line);border-bottom-left-radius:5px}
+  .mock .tool{
+    margin:6px 12px;font-size:11.5px;color:var(--muted);
+    border-left:2px solid var(--line);padding-left:8px;
+  }
+  .mock .composer{
+    margin:8px 10px 12px;border:1.5px solid var(--accent);border-radius:16px;
+    padding:9px 10px;background:var(--card);
+  }
+  .mock .rowline{display:flex;align-items:center;gap:8px;margin-top:8px}
+  .mock .chip{
+    font-size:11px;background:var(--surface);border-radius:999px;
+    padding:4px 10px;color:var(--text);
+  }
+  .mock .send{
+    width:30px;height:30px;border-radius:50%;background:var(--accent);
+    color:#fff;display:flex;align-items:center;justify-content:center;
+    font-size:14px;margin-left:auto;
+  }
+  .mock .label{
+    font-size:11px;color:var(--muted);margin:10px 12px 3px;letter-spacing:.3px;
+  }
+  .mock .card-m{
+    margin:5px 12px;padding:9px 11px;border-radius:12px;
+    background:var(--card);border:1px solid var(--line);
+    display:flex;align-items:center;gap:8px;font-size:12px;
+  }
+  .mockcap{font-size:12px;color:var(--muted);margin:-6px 0 18px;max-width:360px}
+
+  footer{padding:38px 0 0;color:var(--muted);font-size:13px}
+  @media (max-width:560px){
+    header{padding:42px 0 30px}
+    .example .q{display:block}
+    .example .q span{display:inline-block;margin-bottom:6px}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="logo"><i></i>MINDCLAW</div>
+    <h1>一部手机上的<br>完整智能体</h1>
+    <p class="lede">
+      MindClaw 把大模型、内置 Linux、系统权限、自动化调度和可替换的界面装进 Android。
+      你用一句话交代任务，它去执行 —— 读文件、跑命令、操作页面、在危险处停下来等你确认，
+      再把结果放回对话里。
+    </p>
+    <div class="meta">
+      <span class="pill">多模型</span><span class="pill">群聊</span>
+      <span class="pill">本地 Linux</span><span class="pill">常驻自动化</span>
+      <span class="pill">可换 UI</span><span class="pill">密码保护</span>
+      <span class="pill">富卡片</span><span class="pill">数据可导出</span>
+    </div>
+    <nav>
+      <a href="#start">快速开始</a>
+      <a href="#chat">对话</a>
+      <a href="#rich">富内容</a>
+      <a href="#tools">工具</a>
+      <a href="#linux">Linux</a>
+      <a href="#auto">自动化</a>
+      <a href="#theme">主题</a>
+      <a href="#lock">安全</a>
+      <a href="#know">记忆与规则</a>
+      <a href="#more">其它</a>
+      <a href="#guide">操作指南</a>
+      <a href="#spec">主题包规范</a>
+      <a href="#cases">实例</a>
+      <a href="#map">入口对照</a>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap">
+
+<!-- ================= 01 ================= -->
+<section id="start">
+  <h2><span class="num">01</span>快速开始</h2>
+  <p class="sub">三步就能让它干活。</p>
+
+  <h3 class="block">第一步 · 配一个模型</h3>
+  <p class="path">路径：<b>侧边菜单 → 设置 → 模型设置</b></p>
+  <div class="grid">
+    <div class="card">
+      <h3>填地址与密钥</h3>
+      <p>支持官方接口和各类中转站。填好 Base URL 与 Key，点「测试」能拿到回复即可。</p>
+    </div>
+    <div class="card">
+      <h3>一个档案一个模型</h3>
+      <p>同一条地址下可以建多个档案：便宜的快模型用来聊天，强的模型用来写代码，随时切换。</p>
+    </div>
+    <div class="card">
+      <h3>思考深度</h3>
+      <p>支持推理的模型可以单独设深度；不支持也不会报错，会自动忽略这个设置。</p>
+    </div>
+  </div>
+
+  <h3 class="block">第二步 · 打开需要的权限</h3>
+  <p class="path">路径：<b>设置 → 能力扩展</b></p>
+  <table class="table">
+    <tr><th>权限</th><th>给什么能力</th><th>不给会怎样</th></tr>
+    <tr><td>无障碍</td><td>读屏幕控件、点击、滑动、输入</td><td>只能聊天，不能操作界面</td></tr>
+    <tr><td>通知读取</td><td>把系统通知交给自动化当触发源</td><td>自动化只能按时间跑</td></tr>
+    <tr><td>屏幕录制</td><td>看到画面内容（截图理解）</td><td>看不了屏幕上的图形信息</td></tr>
+    <tr><td>电池优化白名单</td><td>后台长任务不被系统掐断</td><td>息屏后任务可能被暂停</td></tr>
+  </table>
+
+  <h3 class="block">第三步 · 说第一句话</h3>
+  <p class="path">在输入框里直接描述任务即可，不需要学语法。</p>
+  <pre><b>你：</b>看看我手机的存储还剩多少，哪个目录最占地方
+
+<b>它：</b>（读取存储信息 → 列目录占用 → 排序）
+     总容量 128 GB，可用 41.2 GB。占用前三：
+     1. DCIM/Camera   18.4 GB
+     2. Download      7.1 GB
+     3. Android/data  5.6 GB
+     需要我按大小列出可清理的项吗？</pre>
+</section>
+
+<!-- ================= 02 ================= -->
+<section id="chat">
+  <h2><span class="num">02</span>对话</h2>
+  <p class="sub">一条会话里能同时有文字、图片、文件、工具调用和可视化内容。</p>
+
+  <h3 class="block">2.1 多模型</h3>
+
+  <div class="mock">
+    <div class="screen">
+      <div class="bar"><div class="dot"></div><div class="grow"></div><div class="dot"></div></div>
+      <div class="bubble me">帮我看下这个目录的日志有没有报错</div>
+      <div class="tool">思考 2.4s　·　termux · success</div>
+      <div class="bubble ai">扫了 12 个文件，3 处 ERROR：<br>app.log:88 连接超时<br>worker.log:41 队列已满</div>
+      <div class="composer">
+        <div style="color:var(--muted);font-size:11.5px">说点什么…</div>
+        <div class="rowline">
+          <span class="chip">＋</span><span class="chip">图</span>
+          <span class="chip">DeepSeek 对话</span><div class="send">↑</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <p class="mockcap">聊天页：顶栏只有两个圆按钮；输入框上方那枚胶囊是当前模型档案，点它就能换。</p>
+
+  <table class="table">
+    <tr><th>能力</th><th>具体能怎么用</th></tr>
+    <tr><td>中途换模型</td><td>点输入框上方的模型胶囊切换，历史与上下文继续沿用；也可以从右上角圆按钮 →「选择模型」进去</td></tr>
+    <tr><td>多档案并存</td><td>同一地址下可以建多个档案：便宜的快模型闲聊、强模型写代码、带视觉的模型看图，各管各的</td></tr>
+    <tr><td>档案独立配置</td><td>地址、密钥、模型名、显示名、思考深度、工具集都是按档案存的，改一个不影响别的</td></tr>
+    <tr><td>工具集收紧</td><td>能让某个档案只能读写文件、不许跑命令 —— 用它聊天就不可能误触发命令</td></tr>
+    <tr><td>思考深度</td><td>支持推理的模型可调档；不支持的模型自动忽略，不会报错</td></tr>
+    <tr><td>连通性测试</td><td>档案里点「测试」发一句，能收到回复就说明地址、密钥、模型名三项都对</td></tr>
+    <tr><td>批量导入</td><td>中转站可以批量导入生成多个档案，省掉逐个手填</td></tr>
+    <tr><td>失败提示</td><td>地址错 / 密钥错 / 模型名不存在会给不同原因，并提示换模型，而不是空白报错</td></tr>
+  </table>
+
+  <h3 class="block">2.2 一条消息可以带什么</h3>
+  <table class="table">
+    <tr><th>可以在消息里</th><th>具体表现</th></tr>
+    <tr><td>纯文字</td><td>直接输入，换行、列表、代码块、公式都正常显示</td></tr>
+    <tr><td>图片</td><td>拍照或从相册选，缩略图挂在输入框上方，可删可预览；带视觉的模型会真的看图</td></tr>
+    <tr><td>文件</td><td>系统选择器选，模型的工具能直接读它的真实路径，不需要你复制内容</td></tr>
+    <tr><td>多个附件</td><td>一次挂多个，发送前逐个可移除；发送时一起发出去</td></tr>
+    <tr><td>引用</td><td>引用某一句再说，引用条显示在输入框上方，原文处留虚线锚点</td></tr>
+    <tr><td>@ 提及</td><td>@ 工具 / 插件会把它的说明展开成上下文，模型知道"这次该用这个"</td></tr>
+  </table>
+
+  <h3 class="block">2.3 群聊</h3>
+  <p class="sub">把几个不同人设的 AI 放进同一个会话。</p>
+  <table class="table">
+    <tr><th>能力</th><th>说明</th></tr>
+    <tr><td>各自人设</td><td>每个成员可以设定身份、口吻与关注点</td></tr>
+    <tr><td>各自模型</td><td>一个成员用一个模型，创作和审校可以是两家</td></tr>
+    <tr><td>@ 点名</td><td>只让指定成员发言，其余待命</td></tr>
+    <tr><td>发言顺序</td><td>可设轮流、随机、或者按你点的顺序</td></tr>
+    <tr><td>插话与打断</td><td>发言途中可以叫停，或直接追加一句</td></tr>
+  </table>
+
+  <h3 class="block">2.4 标记与引用</h3>
+  <table class="table">
+    <tr><th>功能</th><th>怎么用</th><th>能怎么用（细节）</th></tr>
+    <tr><td>划重点</td><td>选中文字 → 选颜色</td><td>多种荧光笔色；按「原文 + 第几次出现」定位，同样的字不会一起被标；重开应用仍在原位；同一处再点可换色或取消</td></tr>
+    <tr><td>引用回复</td><td>长按 → 引用并回复</td><td>引用条挂在输入框上方可随时取消；发出后原文处留虚线锚点，回头能看出"这句话被接过"</td></tr>
+    <tr><td>重新生成</td><td>长按某条 → 重新生成</td><td>拿它当时看到的上下文重答一次；换模型后再重新生成，等于让另一个模型重做这一题</td></tr>
+    <tr><td>修改</td><td>长按自己的话 → 修改</td><td>改完重发，后续基于新内容；适合"我上一句说错了"的场景</td></tr>
+    <tr><td>复制</td><td>长按 → 复制</td><td>复制的是 Markdown 原文，粘到别处结构还在</td></tr>
+  </table>
+
+  <h3 class="block">2.5 过程可见</h3>
+  <p class="sub">它不会只丢给你一个结论。每一步都能看到，也能展开细节。</p>
+  <pre><b>工作中…</b>                    ← 还没出字（或正在写）
+<b>思考 3.2s</b>                    ← 想完了，点开看推理全文
+<b>python · running</b>           ← 工具调用，展开可见参数与输出
+<b>正在使用「联网搜索」「今天的汇率」</b> ← 正在做的那一步
+（结论正文，流式输出）</pre>
+
+  <table class="table">
+    <tr><th>状态</th><th>含义</th></tr>
+    <tr><td>加载中…</td><td>正文与思考都还空着，请求刚发出</td></tr>
+    <tr><td>工作中…</td><td>已经在写，或者已经有思考内容</td></tr>
+    <tr><td>已思考 3.2s</td><td>想完了，耗时是**已经花掉的**时间</td></tr>
+    <tr><td>工具 · N</td><td>这一轮调了几次工具，点开逐条看</td></tr>
+  </table>
+</section>
+
+<!-- ================= 03 ================= -->
+<section id="rich">
+  <h2><span class="num">03</span>富内容</h2>
+  <p class="sub">回复里可以直接画图，不用截图、不用跳出去。</p>
+
+  <table class="table">
+    <tr><th>类型</th><th>触发方式</th><th>用途</th></tr>
+    <tr><td>图表</td><td>```card:mermaid</td><td>流程图、思维导图、时序图、甘特图</td></tr>
+    <tr><td>图片</td><td>```card:image</td><td>一张成品图，带来源标注、可全屏</td></tr>
+    <tr><td>交互卡片</td><td>```card:html</td><td>地图、可交互图表、任意 HTML + JS</td></tr>
+    <tr><td>正文插图</td><td>![说明](路径或网址)</td><td>跟着文字流的图片，最自然</td></tr>
+    <tr><td>链接卡片</td><td>正文里出现网址</td><td>自动区分网页与接口，点开即走</td></tr>
+    <tr><td>文件卡片</td><td>正文里出现本地路径</td><td>生成的文件点开就能用</td></tr>
+  </table>
+
+  <div class="note">
+    图表和交互卡片跑在沙箱页面里：能用 CDN 画图，但读不到你的文件、也拿不到应用权限。
+  </div>
+</section>
+
+<!-- ================= 04 ================= -->
+<section id="tools">
+  <h2><span class="num">04</span>工具与能力</h2>
+  <p class="sub">复杂任务会被拆成若干次工具调用，你每一步都看得见。</p>
+
+  <table class="table">
+    <tr><th>工具</th><th>能做什么</th></tr>
+    <tr><td>文件</td><td>读写工作目录、批量重命名、解压、生成文档与图片</td></tr>
+    <tr><td>命令</td><td>在内置 Linux 里执行，可装包、编译、跑脚本</td></tr>
+    <tr><td>Python</td><td>直接运行 Python，带常用库，可读可写文件</td></tr>
+    <tr><td>浏览器</td><td>真实触摸与按键操作页面，处理登录、分页、点击流程</td></tr>
+    <tr><td>屏幕</td><td>读控件树、定位元素、连续手势、输入文本</td></tr>
+    <tr><td>通知</td><td>读取系统通知，作为自动化的触发与信息来源</td></tr>
+    <tr><td>联网</td><td>搜索、抓取网页、读取正文并压缩成要点</td></tr>
+    <tr><td>提醒</td><td>前台只标红点，后台额外发系统通知</td></tr>
+    <tr><td>请求验证</td><td>危险动作前弹一次密码 / 指纹，你拒绝它就停</td></tr>
+  </table>
+
+  <h3 class="block">工具页：把做法存下来</h3>
+  <div class="grid">
+    <div class="card">
+      <h3>一个工具 = 一个文件夹</h3>
+      <p><code>tool.md</code> 写"这件事怎么做"，旁边可以放脚本、模板、参考文件。模型觉得相关时才去读。</p>
+    </div>
+    <div class="card">
+      <h3>固定工具</h3>
+      <p>「请求验证」「提醒用户」是内置的：不能删除、不能 @ 提及，也不占你的文件夹。</p>
+    </div>
+    <div class="card">
+      <h3>和规则的区别</h3>
+      <p>规则永远生效（约束）；工具按需取用（做法）。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 05 ================= -->
+<section id="linux">
+  <h2><span class="num">05</span>内置 Linux 环境</h2>
+  <p class="sub">开箱即用的 Alpine，不依赖 Termux，也不需要 root。</p>
+
+  <div class="grid">
+    <div class="card">
+      <h3>零配置</h3>
+      <p>首次使用自动解压环境；之后模型可以直接 <code>apk add</code>、<code>pip install</code>，装完就能用。</p>
+    </div>
+    <div class="card">
+      <h3>双向可见</h3>
+      <p>应用生成的文件 Linux 能直接跑；Linux 生成的文件应用能直接点开 —— 不用来回复制。</p>
+    </div>
+    <div class="card">
+      <h3>能上网</h3>
+      <p>DNS 与证书都已就绪，包管理器和脚本里的网络请求可以直接工作。</p>
+    </div>
+    <div class="card">
+      <h3>超时与回收</h3>
+      <p>每条命令有超时上限；异常退出会连带结束子进程，不留后台孤儿耗电。</p>
+    </div>
+  </div>
+
+  <pre><b>你：</b>把这个目录的 PNG 批量压到宽度 800，输出到 out/
+
+<b>它：</b>（写一个脚本 → 在 Linux 里跑）
+     for f in *.png; do
+       convert "$f" -resize 800x "out/$f"
+     done
+     完成 37 个文件，最大 214 KB，最长耗时 0.4s/个。</pre>
+</section>
+
+<!-- ================= 06 ================= -->
+<section id="auto">
+  <h2><span class="num">06</span>常驻自动化</h2>
+  <p class="sub">让一条聊天变成「一直盯着」的助手：定时跑脚本，有事才叫你。</p>
+
+  <h3 class="block">怎么开</h3>
+  <p class="path">在输入框里提到 <b>autopilot</b>（手打或从 @ 面板选）→ 这条聊天立刻变成常驻聊天</p>
+  <table class="table">
+    <tr><th>出现的东西</th><th>位置</th></tr>
+    <tr><td>自动化图标</td><td>侧边菜单历史列表里，那一条会话标题左侧（运行中为强调色）</td></tr>
+    <tr><td>Autopilot 文件</td><td>聊天右上角「更多」菜单里，进去就是脚本与间隔</td></tr>
+  </table>
+
+  <h3 class="block">脚本空间</h3>
+
+  <div class="mock">
+    <div class="screen">
+      <div class="bar"><div class="dot"></div><div class="grow"></div><div class="dot"></div></div>
+      <div class="label">自动化 · 每 60 秒</div>
+      <div class="card-m">循环箭头　常驻运行<span style="margin-left:auto;color:var(--accent)">开</span></div>
+      <div class="card-m">计时器　执行间隔<span style="margin-left:auto;color:var(--muted)">60s · 5m · 自定义</span></div>
+      <div class="label">脚本</div>
+      <div class="card-m">check_mail.sh<span style="margin-left:auto;color:var(--muted)">▶　删除</span></div>
+      <div class="card-m">watch_stock.py<span style="margin-left:auto;color:var(--muted)">▶　删除</span></div>
+      <div class="label">最近一次输出</div>
+      <div class="card-m" style="display:block;font-family:monospace;font-size:11px">未读 3 封，最新：季度报表</div>
+    </div>
+  </div>
+  <p class="mockcap">Autopilot 文件页：开关、每个脚本各自的间隔、脚本列表与最近输出都在同一屏。</p>
+
+  <div class="grid">
+    <div class="card">
+      <span class="tag">隔离</span>
+      <h3>每条会话一个目录</h3>
+      <p><code>.sh</code> / <code>.py</code> 各放各的。抓邮件的脚本不会跑到盯盘任务里拿错参数。</p>
+    </div>
+    <div class="card">
+      <h3>每个脚本自己的间隔</h3>
+      <p>抓邮件 1 分钟、盯盘 5 秒、日报 1 天一次，各设各的，互不迁就。</p>
+    </div>
+    <div class="card">
+      <h3>随时手动跑一次</h3>
+      <p>脚本行右边的 ▶ 就是"现在跑一轮"，方便调试，不影响定时。</p>
+    </div>
+  </div>
+
+  <h3 class="block">判断逻辑：什么时候叫模型</h3>
+  <table class="table">
+    <tr><th>脚本输出</th><th>行为</th></tr>
+    <tr><td>空 / 只有空白</td><td>这一轮没事发生，继续循环，不打扰模型</td></tr>
+    <tr><td>与上一轮完全相同</td><td>同上（很多脚本会无脑打印"没有新邮件"）</td></tr>
+    <tr><td>有变化</td><td>叫醒模型处理，把结论放回会话；后台时另发通知</td></tr>
+  </table>
+
+  <h3 class="block">一份能直接用的脚本</h3>
+  <pre><b>#!/bin/sh
+# 每 60 秒跑一次：有未读才输出，没有就什么都不打印</b>
+count=$(curl -s "https://mail.example.com/api/unread" | jq -r '.count')
+[ "$count" -gt 0 ] || exit 0            <b># 没有新邮件 → 静默</b>
+subject=$(curl -s "https://mail.example.com/api/latest" | jq -r '.subject')
+echo "未读 ${count} 封，最新：${subject}"</pre>
+
+  <h3 class="block">在后台也不错过</h3>
+  <div class="grid">
+    <div class="card"><h3>前台</h3><p>内容进当前会话 + 历史列表标红点，不额外发通知（你正在看）。</p></div>
+    <div class="card"><h3>后台</h3><p>上面两条之外，再发一条系统通知 —— 划得掉、点开回到对应会话。</p></div>
+    <div class="card"><h3>保活</h3><p>长任务跑起来有常驻通知；配合电池白名单，息屏也能继续。</p></div>
+  </div>
+</section>
+
+<!-- ================= 07 ================= -->
+<section id="theme">
+  <h2><span class="num">07</span>可替换的界面</h2>
+  <p class="sub">聊天界面可以用自己写的 HTML 重做 —— 也可以让 AI 帮你写。</p>
+
+  <p class="path">路径：<b>设置 → UI 设置 → 外观 → 主题包（HTML 界面）</b></p>
+
+  <div class="grid">
+    <div class="card">
+      <h3>主题包是什么</h3>
+      <p>名字 + 主题色 + 一整页 HTML。列表里可以并存多个，随时切换；选「应用默认界面」就回到原生。</p>
+    </div>
+    <div class="card">
+      <h3>能拿到什么</h3>
+      <p>消息全文（含思考与工具调用）、当前模型、附件条数、主题色、明暗、字号。</p>
+    </div>
+    <div class="card">
+      <h3>能做什么</h3>
+      <p>发消息、停止、换模型、选文件/图片、读剪贴板、打开本地文件、显示本地图片。</p>
+    </div>
+  </div>
+
+  <h3 class="block">最小可用的页面</h3>
+  <pre>&lt;script&gt;
+<b>// 应用推数据给你</b>
+window.App.onMessages = (list, busy) =&gt; {
+  // list: [{role, content, reasoning, pending, error, tools}]
+};
+window.App.onTheme = (c) =&gt; {
+  document.documentElement.style.setProperty('--page', c.page);
+  document.documentElement.style.setProperty('--text', c.text);
+};
+window.App.onState = (s) =&gt; { /* s.model / s.busy / s.pendingAttachments */ };
+
+<b>// 你发消息给应用</b>
+function send(text) {
+  window.flutter_inappwebview.callHandler('send', text);
+}
+&lt;/script&gt;</pre>
+
+  <div class="note">
+    让 AI 写最快：说一句「把聊天界面做成深色极简，带思考折叠」，它会生成一个主题包，
+    你切过去看效果、不满意继续让它改。写坏了切回默认界面即可，不影响任何数据。
+  </div>
+</section>
+
+<!-- ================= 08 ================= -->
+<section id="lock">
+  <h2><span class="num">08</span>密码与安全</h2>
+  <p class="sub">锁的粒度由你定 —— 可以只锁笔记，也可以锁整个应用。</p>
+
+  <p class="path">路径：<b>设置 → 密码与安全</b></p>
+
+  <table class="table">
+    <tr><th>保护范围</th><th>什么时候要验证</th></tr>
+    <tr><td>打开应用</td><td>每次冷启动</td></tr>
+    <tr><td>设置</td><td>进入设置页（内含模型与密钥）</td></tr>
+    <tr><td>笔记</td><td>进入笔记页</td></tr>
+    <tr><td>计划</td><td>进入计划页</td></tr>
+    <tr><td>记忆</td><td>进入记忆管理</td></tr>
+    <tr><td>规则</td><td>进入规则列表</td></tr>
+    <tr><td>工具</td><td>进入工具页</td></tr>
+    <tr><td>敏感权限</td><td>进入权限相关入口</td></tr>
+  </table>
+
+  <div class="grid" style="margin-top:16px">
+    <div class="card">
+      <h3>两种解锁方式</h3>
+      <p>密码，或者系统自带指纹 / 面部 / PIN。生物识别由系统界面完成，应用只拿到通过与否。</p>
+    </div>
+    <div class="card">
+      <h3>验证过的状态只在内存</h3>
+      <p>进程结束就清空 —— 这就是"下次打开还要验证"的实现，不需要额外设置。</p>
+    </div>
+    <div class="card">
+      <h3>模型也会来问你</h3>
+      <p>执行危险操作前它会主动弹一次验证。<b>拒绝 → 立即停止</b>，不会绕别的路继续。</p>
+    </div>
+  </div>
+
+  <pre><b>它：</b>准备删除 Download 下 12 个三个月前的安装包，共 1.8 GB。
+     （弹出验证窗口）
+<b>你：</b>拒绝
+<b>它：</b>已停止，没有删除任何文件。</pre>
+</section>
+
+<!-- ================= 09 ================= -->
+<section id="know">
+  <h2><span class="num">09</span>记忆与规则</h2>
+  <p class="sub">让它越用越懂你，而不是每次从头解释。</p>
+
+  <div class="grid">
+    <div class="card">
+      <span class="tag">记忆</span>
+      <h3>跨会话生效</h3>
+      <p>你纠正过的偏好、长期有效的设定会被记住。可以随时查看、编辑、删除；不想要就整体关掉。</p>
+    </div>
+    <div class="card">
+      <span class="tag">规则</span>
+      <h3>永远生效的约束</h3>
+      <p>「回答先给结论」「代码只用 Python 3」「不要主动建议付费服务」——写一次，一直照做。</p>
+    </div>
+    <div class="card">
+      <span class="tag">笔记</span>
+      <h3>模型可读写</h3>
+      <p>会议记录、想法、资料摘要都能存；模型写笔记，你也能让它翻出来用。</p>
+    </div>
+    <div class="card">
+      <span class="tag">计划</span>
+      <h3>待办与日程</h3>
+      <p>说"明天下午三点提醒我开会"，它就建一条，到点提醒。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 10 ================= -->
+<section id="more">
+  <h2><span class="num">10</span>还有这些</h2>
+  <div class="grid">
+    <div class="card"><h3>研究</h3><p>给一个题目，自动多轮检索、读正文、交叉核对，产出带出处的报告。</p></div>
+    <div class="card"><h3>内置浏览器</h3><p>和应用同一进程，登录状态与页面操作都能被工具复用。</p></div>
+    <div class="card"><h3>Python 控制台</h3><p>自己写代码直接跑，看输出、改参数、再跑一次。</p></div>
+    <div class="card"><h3>终端</h3><p>命令在跑时出现入口，可看实时输出，也能自己敲。</p></div>
+    <div class="card"><h3>电脑联动</h3><p>可选的局域网通道，让手机上的助手指挥同一网络里的电脑。</p></div>
+    <div class="card"><h3>备份与恢复</h3><p>设置、对话、主题包都能导出成一个文件；换机导入即可。</p></div>
+    <div class="card"><h3>性能面板</h3><p>看每一步花了多久、哪个工具最慢，长任务心里有数。</p></div>
+    <div class="card"><h3>插件</h3><p>补充提示词与工具说明，把你自己的领域知识塞给它。</p></div>
+  </div>
+</section>
+
+<!-- ================= SPEC ================= -->
+<section id="spec">
+  <h2><span class="num">SPEC</span>主题包规范</h2>
+  <p class="sub">
+    主题包把聊天界面整页交给一份 HTML。下面把数据结构、双向接口、消息格式、
+    沙箱边界与性能要求逐条写清 —— 照这份写，行为就是确定的。
+  </p>
+
+  <h3 class="block">S.1 一个主题包是什么</h3>
+  <table class="table mono">
+    <tr><th>字段</th><th>类型</th><th>说明</th></tr>
+    <tr><td>id</td><td>string</td><td>应用生成；内置包固定为 <code>builtin</code></td></tr>
+    <tr><td>name</td><td>string</td><td>列表里显示的名字</td></tr>
+    <tr><td>seed</td><td>number</td><td>主题色，ARGB 整数，如 <code>0xFF1F4B3F</code></td></tr>
+    <tr><td>html</td><td>string</td><td>整页 HTML（含 CSS / JS），上限 <b>512 KB</b></td></tr>
+    <tr><td>builtin</td><td>boolean</td><td>内置示例：不可删、不可改</td></tr>
+  </table>
+
+  <h4 class="block">存储格式</h4>
+  <pre>{
+  <b>"activeId"</b>: "p1730000000000000",   <i>// 空串 = 用应用默认界面</i>
+  <b>"packs"</b>: [
+    { "id": "builtin", "name": "内置示例", "seed": -11090049,
+      "html": "&lt;!DOCTYPE html&gt;…", "builtin": true }
+  ]
+}</pre>
+  <p class="sub">
+    一份 JSON 就是完整备份：导出发给别人、对方导入即可用。超过 512 KB 会被<b>拒绝保存</b>而不是截断
+    —— 截断后的 HTML 是"少了半截脚本"的坏包，比拒绝更难查。
+  </p>
+
+  <h3 class="block">S.2 生命周期</h3>
+  <pre><b>宿主</b> 写文件 → 用 file:// 加载页面
+  → onLoadStop
+      → onTheme(colors)          一次
+      → onState(state)           一次
+      → onMentions({…})          一次
+      → onMessages(list, busy)   一次
+  → 之后的变化按需推送</pre>
+  <div class="note">
+    用 <code>file://</code> 而不是内联注入，是为了让页面能直接引用本地图片
+    （<code>&lt;img src="file:///…"&gt;</code>）。内联页面的源是 <code>about:blank</code>，
+    本地子资源会被当跨源拒绝。
+  </div>
+
+  <h3 class="block">S.3 调用守卫（很重要）</h3>
+  <p class="sub">宿主每次调用前先检查方法是不是函数：</p>
+  <pre>(window.App &amp;&amp; typeof window.App.onMessages === "function")
+  &amp;&amp; window.App.onMessages(list, busy);</pre>
+  <p class="sub">
+    所以你可以只实现其中几个 —— 没实现的<b>不会报错</b>，也不会弹红字。
+    但必须写成函数值：<code>window.App.onState = {…}</code> 会被跳过。
+  </p>
+
+  <h3 class="block">S.4 页面 → 宿主（11 个通道）</h3>
+  <table class="table mono">
+    <tr><th>handler</th><th>参数</th><th>行为</th></tr>
+    <tr><td>send</td><td>text</td><td>发一条消息，走与用户点发送完全相同的流程</td></tr>
+    <tr><td>stop</td><td>—</td><td>停止生成（真的取消请求）</td></tr>
+    <tr><td>pickModel</td><td>—</td><td>打开原生模型选择器，选完经 <code>onState.model</code> 回传</td></tr>
+    <tr><td>pickFile</td><td>—</td><td>系统文件选择器，选中后进入待发附件</td></tr>
+    <tr><td>pickImage</td><td>—</td><td>系统图片选择器</td></tr>
+    <tr><td>paste</td><td>—</td><td>返回剪贴板文本（可空串）</td></tr>
+    <tr><td>image</td><td>path</td><td>返回该图片的 <code>data:</code> URI；失败返回 <code>!</code> 开头的原因</td></tr>
+    <tr><td>images</td><td>text</td><td>解析 Markdown 里的图片，返回 JSON 字符串</td></tr>
+    <tr><td>open</td><td>path</td><td>用系统查看器打开文件；空串 = 成功</td></tr>
+    <tr><td>mark</td><td>{index, text, occurrence?, color?}</td><td>给第 index 条里的那段文字打标记</td></tr>
+    <tr><td>quote</td><td>{index, text}</td><td>引用那一段，下次发送会带上</td></tr>
+  </table>
+  <pre><b>// 调用方式</b>
+window.flutter_inappwebview.callHandler('send', '你好');
+const text = await window.flutter_inappwebview.callHandler('paste');</pre>
+
+  <h3 class="block">S.5 宿主 → 页面（6 个回调）</h3>
+
+  <h4 class="block">onMessages(list, busy)</h4>
+  <p class="sub">全量推送当前会话；<code>busy</code> 表示这一轮是否还在生成。</p>
+  <div class="warn">
+    每次调用都代表「这就是全部消息」。<b>不要往列表里追加</b> —— 流式时每秒推数次，追加会得到 N 条重复。
+  </div>
+
+  <h4 class="block">onTheme(colors)</h4>
+  <table class="table mono">
+    <tr><th>key</th><th>类型</th><th>含义</th></tr>
+    <tr><td>primary</td><td>'#RRGGBB'</td><td>强调色</td></tr>
+    <tr><td>onPrimary</td><td>'#RRGGBB'</td><td>压在强调色上的文字</td></tr>
+    <tr><td>surface</td><td>'#RRGGBB'</td><td>卡片 / 控件填充</td></tr>
+    <tr><td>page</td><td>'#RRGGBB'</td><td>页面底色</td></tr>
+    <tr><td>text</td><td>'#RRGGBB'</td><td>主文字</td></tr>
+    <tr><td>muted</td><td>'#RRGGBB'</td><td>次要文字</td></tr>
+    <tr><td>bubble</td><td>'#RRGGBB'</td><td>用户气泡底色</td></tr>
+    <tr><td>dark</td><td>boolean</td><td>是否深色（真布尔，不是字符串）</td></tr>
+    <tr><td>fontScale</td><td>number</td><td>全局字号缩放</td></tr>
+  </table>
+  <p class="sub">调用时机：页面加载完成、系统深浅色切换、字号变化。</p>
+
+  <h4 class="block">onState(state)</h4>
+  <table class="table mono">
+    <tr><th>key</th><th>类型</th><th>含义</th></tr>
+    <tr><td>busy</td><td>boolean</td><td>这一轮是否在生成</td></tr>
+    <tr><td>model</td><td>string</td><td>当前模型的显示名</td></tr>
+    <tr><td>canStop</td><td>boolean</td><td>是否可停止</td></tr>
+    <tr><td>pendingAttachments</td><td>number</td><td>待发附件条数</td></tr>
+  </table>
+
+  <h4 class="block">onPatch(index, msg, busy)</h4>
+  <p class="sub">
+    流式输出时<b>只有最后一条在变</b>，宿主只推这一条。实现它，出字时就不用重绘整个列表
+    —— 这是「流式不卡」最有效的做法。不实现也能用（退回全量）。
+  </p>
+
+  <h4 class="block">onMentions({tools, plugins})</h4>
+  <p class="sub">可被 @ 的工具与插件清单（<code>{id, title, note}</code>），用来画自己的 @ 选择器。</p>
+
+  <h4 class="block">onSendResult(ok, errorText)</h4>
+  <p class="sub">当前版本预留，宿主尚未调用；实现无副作用，但别依赖它做唯一反馈。</p>
+
+  <h3 class="block">S.6 消息对象</h3>
+  <pre>{
+  role: 'user' | 'assistant',
+  content: string,        <i>// Markdown 原文，宿主不做 HTML 渲染</i>
+  reasoning: string,      <i>// 思考过程</i>
+  reasoningMs: number,    <i>// 思考耗时</i>
+  pending: boolean,       <i>// 该条仍在流式生成</i>
+  error: string | null,
+  marks: [{ text, occurrence, color, kind }],
+  quote: { text, color } | null,
+  tools: [{
+    name, summary,
+    status: 'awaitingConfirm' | 'running' | 'success' | 'failed' | 'rejected',
+    args: string,         <i>// 参数原始 JSON 字符串</i>
+    output: string,
+    error: boolean
+  }]
+}</pre>
+  <div class="warn">
+    <code>content</code> 是 Markdown 源文。<b>不要直接</b> <code>innerHTML = content</code> ——
+    那等于把模型输出当 HTML 执行。要么自己解析，要么 <code>textContent</code> 原样显示。
+  </div>
+
+  <h4 class="block">标记颜色</h4>
+  <table class="table mono">
+    <tr><th>color</th><th>含义</th></tr>
+    <tr><td>yellow</td><td>默认荧光笔</td></tr>
+    <tr><td>green / blue / pink</td><td>其它荧光笔色</td></tr>
+    <tr><td>quote</td><td>引用锚点（虚线），系统保留</td></tr>
+  </table>
+
+  <h3 class="block">S.7 推送节流与截断</h3>
+  <table class="table">
+    <tr><th>规则</th><th>值</th><th>为什么</th></tr>
+    <tr><td>指纹比对</td><td>条数 + 最后一条内容/思考/pending/error + busy</td><td>没变就不推</td></tr>
+    <tr><td>按消息缓存</td><td>只有变化的那条重新编码</td><td>长会话不必整段重算</td></tr>
+    <tr><td>增量通道</td><td>onPatch 约 60ms</td><td>跟得上出字速度</td></tr>
+    <tr><td>全量间隔</td><td>&lt;16KB→120ms；16–48KB→180ms；&gt;48KB→260ms</td><td>载荷大时别排队堆积</td></tr>
+    <tr><td>reasoning 上限</td><td>4000 字</td><td>跨桥体积</td></tr>
+    <tr><td>tools args / output</td><td>各 1200 字</td><td>命令输出可能上百 KB</td></tr>
+  </table>
+  <p class="sub">推论：收到的是<b>近似连续</b>而非逐字更新；也不要假设 args / output 完整（超长会标注「已截断」）。</p>
+
+  <h3 class="block">S.8 本地图片与文件</h3>
+  <table class="table">
+    <tr><th>做法</th><th>说明</th></tr>
+    <tr><td><code>&lt;img src="file:///…"&gt;</code></td><td>页面从 <code>file://</code> 加载，本地图片可直接显示</td></tr>
+    <tr><td><code>App.image(path)</code></td><td>返回 <code>data:</code> URI；失败返回 <code>!</code> 开头的原因</td></tr>
+    <tr><td><code>App.images(text)</code></td><td>解析正文里的 Markdown 图片，返回 <code>[{alt, src, remote, data}]</code></td></tr>
+    <tr><td><code>App.open(path)</code></td><td>用系统查看器打开文件</td></tr>
+  </table>
+  <p class="sub">可读目录：应用私有目录、外部私有目录（含附件）、相册与下载。单张图上限 6 MB，一条消息最多 24 张。</p>
+  <pre><b>// 一定要在页面端缓存 data URI</b>
+const cache = new Map();
+async function pictureFor(im) {
+  if (im.remote) return im.src;
+  if (cache.has(im.src)) return cache.get(im.src);
+  const d = await window.App.image(im.src);
+  if (d.startsWith('data:')) cache.set(im.src, d);
+  return d;
+}</pre>
+
+  <h3 class="block">S.9 沙箱边界</h3>
+  <table class="table mono">
+    <tr><th>设置</th><th>值</th><th>结果</th></tr>
+    <tr><td>javaScriptEnabled</td><td>true</td><td>页面可以跑脚本（这是功能定义）</td></tr>
+    <tr><td>allowFileAccess</td><td>true</td><td>页面能引用本地图片与文件</td></tr>
+    <tr><td>allowUniversalAccessFromFileURLs</td><td>true</td><td>本地页面能请求 https（在线音频、CDN 图表）</td></tr>
+    <tr><td>allowContentAccess</td><td>false</td><td>不能用 <code>content://</code></td></tr>
+    <tr><td>disableContextMenu</td><td>true</td><td>长按菜单留给页面自己</td></tr>
+    <tr><td>supportZoom</td><td>false</td><td>固定视图，避免与原生手势打架</td></tr>
+  </table>
+  <p class="sub">
+    边界说清楚：页面既能读本机文件、也能联网，请只放自己信任的 HTML。
+    需要外部信息更推荐走 <code>App.send()</code> 让 agent 去取 —— 那条路有确认、有记录。
+  </p>
+
+  <h3 class="block">S.10 性能硬要求</h3>
+  <table class="table">
+    <tr><th>禁止 / 要求</th><th>原因</th></tr>
+    <tr><td>❌ <code>backdrop-filter: blur()</code></td><td>Android WebView 上每帧重模糊整个可视区，滚动直接掉帧</td></tr>
+    <tr><td>❌ 每次推送 <code>innerHTML = ''</code></td><td>每秒数次 × 几十条 = 每秒重建数百节点，滚动位置也被重置</td></tr>
+    <tr><td>✅ 条数不变只更新最后一条</td><td>消息只会追加或整条替换，这个判断安全</td></tr>
+    <tr><td>✅ 长列表用固定容器 + <code>overflow-y:auto</code></td><td>避免整页撑高导致布局抖动</td></tr>
+    <tr><td>✅ 大图懒加载 / 内联 SVG</td><td>解码大图会卡主线程</td></tr>
+  </table>
+
+  <h3 class="block">S.11 版本兼容</h3>
+  <table class="table">
+    <tr><th>版本</th><th>变化</th><th>兼容处理</th></tr>
+    <tr><td>2.33.0</td><td>首版：onMessages / onTheme / send</td><td>—</td></tr>
+    <tr><td>2.33.1</td><td>onState、stop、pickModel、pickFile/Image、fontScale、dark</td><td>宿主调用前做 typeof 守卫</td></tr>
+    <tr><td>2.33.3</td><td>mark / quote / onMentions、推送缓存与截断</td><td>老页面不受影响</td></tr>
+    <tr><td>2.34.x</td><td>image / images / open、失败原因、页面端缓存建议</td><td>新增能力，老页面不需要改</td></tr>
+    <tr><td>2.35.x</td><td>改从 file:// 加载、剥掉页面自带 CSP、允许媒体</td><td>本地图片与音频才真正可用</td></tr>
+    <tr><td>2.36+</td><td>白名单纳入外部私有目录、onPatch 增量通道</td><td>流式更顺、附件图片能读</td></tr>
+  </table>
+  <div class="note">
+    内置示例包随版本自动更新（缺新接口时重建）。<b>你自己建的包永远不会被自动改写。</b>
+  </div>
+
+  <h3 class="block">S.12 排查</h3>
+  <table class="table">
+    <tr><th>症状</th><th>先查什么</th></tr>
+    <tr><td>一片白屏</td><td>宿主会弹一条错误提示（加载失败 / JS 报错 / 注入失败），先看它</td></tr>
+    <tr><td><code>window.App.xxx is not a function</code></td><td>该回调没实现。新版宿主会跳过，老包建议同步</td></tr>
+    <tr><td>消息不出现</td><td>是否实现了 <code>onMessages</code>？名字大小写敏感</td></tr>
+    <tr><td>发送没反应</td><td>handler 名必须正好是 <code>send</code>，参数是字符串</td></tr>
+    <tr><td>颜色不跟随深浅色</td><td>是否在 <code>onTheme</code> 里写了 CSS 变量？宿主会重调，但不会 reload 页面</td></tr>
+    <tr><td>消息重复</td><td>你做了追加，而宿主推的是全量</td></tr>
+    <tr><td>滚动卡</td><td>检查 <code>backdrop-filter</code>、大阴影、是否每次全量重建</td></tr>
+  </table>
+
+  <h3 class="block">S.13 让 AI 写主题包</h3>
+  <p class="sub">
+    内置工具 <code>theme_pack</code> 支持 <code>list / read / create / update / activate / delete / docs</code>。
+    说一句「把聊天界面做成深色极简、带思考折叠」，它会生成一个包；你切过去看效果，不满意继续让它改。
+    写坏了切回默认界面即可，数据不受影响。
+  </p>
+
+  <h3 class="block">S.14 接口速查（十行）</h3>
+  <pre><i>// ---- 收 ----</i>
+window.App.onMessages = (list, busy) =&gt; {}
+window.App.onTheme    = ({primary, onPrimary, surface, page, text, muted, bubble, dark, fontScale}) =&gt; {}
+window.App.onState    = ({busy, model, canStop, pendingAttachments}) =&gt; {}
+window.App.onPatch    = (index, msg, busy) =&gt; {}
+window.App.onMentions = ({tools, plugins}) =&gt; {}
+
+<i>// ---- 发 ----</i>
+await App.paste();                  <i>// 剪贴板文本</i>
+await App.image(path);              <i>// data URI 或 "!原因"</i>
+await App.images(text);             <i>// [{alt, src, remote, data}]</i>
+await App.open(path);               <i>// "" = 成功</i>
+flutter_inappwebview.callHandler('send', text);</pre>
+
+  <h3 class="block">S.15 三条值得记住的规则</h3>
+  <table class="table">
+    <tr><th>规则</th><th>为什么</th></tr>
+    <tr><td>onMessages 是全量</td><td>追加会出现重复</td></tr>
+    <tr><td>content 是 Markdown 原文</td><td>直接 innerHTML 等于执行模型输出</td></tr>
+    <tr><td>实现 onPatch 才会顺</td><td>否则流式时每帧重绘整个列表</td></tr>
+  </table>
+</section>
+
+<!-- ================= GUIDE ================= -->
+<section id="guide">
+  <h2><span class="num">GUIDE</span>操作指南（逐步）</h2>
+  <p class="sub">
+    这一章是"手把手"：每一项功能从哪进、点什么、看到什么、怎么改回来。
+    遇到不熟的地方，按编号一步步来即可。
+  </p>
+
+  <h3 class="block">G.1 第一次打开应用</h3>
+  <ol style="font-size:14.5px;color:var(--muted);line-height:1.9">
+    <li>打开应用 → 左上角圆形按钮打开<b>侧边菜单</b></li>
+    <li>点「设置」→ 找到「模型设置」</li>
+    <li>点「新建档案」，依次填：显示名、Base URL、API Key、模型名</li>
+    <li>点「测试」—— 能收到一句回复就说明通了</li>
+    <li>返回聊天页，输入框上方会显示这个档案的显示名</li>
+  </ol>
+  <div class="note">
+    填错时不要反复重发消息：先在设置里点「测试」，那一步失败会直接告诉你
+    是地址不对、密钥不对，还是模型名不存在。
+  </div>
+
+  <h3 class="block">G.2 发一条消息</h3>
+  <ol style="font-size:14.5px;color:var(--muted);line-height:1.9">
+    <li>在输入框里描述任务，可以只说目标，不用管步骤</li>
+    <li>需要附件时点左边的 <b>＋</b>：选图 / 选文件，缩略图会挂在输入框上方</li>
+    <li>点右侧圆形按钮发送；生成中它会变成<b>停止</b></li>
+    <li>想中途叫停：点停止，已生成的内容会保留</li>
+  </ol>
+
+  <h3 class="block">G.3 换模型</h3>
+  <ol style="font-size:14.5px;color:var(--muted);line-height:1.9">
+    <li>点输入框上方的<b>模型胶囊</b>（显示当前档案名）</li>
+    <li>在列表里选另一个档案 → 立即生效，历史继续沿用</li>
+    <li>同一次弹层里还能调<b>思考深度</b>（仅对支持推理的模型有意义）</li>
+  </ol>
+  <p class="path">也可以走：<b>聊天右上角圆按钮 → 选择模型</b>，两个入口等价。</p>
+
+  <h3 class="block">G.4 标记与引用</h3>
+  <ol style="font-size:14.5px;color:var(--muted);line-height:1.9">
+    <li>长按消息里的文字 → 选中一段 → 选择颜色，即完成<b>划重点</b></li>
+    <li>想取消：同样的位置再长按 → 选「取消标记」</li>
+    <li>想接着某句说：长按 → 「引用并回复」→ 引用条出现在输入框上方</li>
+    <li>发出去后，原文那里会留一道虚线锚点，回头能看出"这句话被接过"</li>
+  </ol>
+
+  <h3 class="block">G.5 建一个群聊</h3>
+  <ol style="font-size:14.5px;color:var(--muted);line-height:1.9">
+    <li>侧边菜单 → 「新对话」右侧的图标行 → 群聊入口</li>
+    <li>依次添加成员：给每个成员起名、写人设、选模型</li>
+    <li>设定发言方式：轮流 / 随机 / 手动点名</li>
+    <li>在输入框用 <b>@</b> 点名某个成员，只有他回答</li>
+    <li>想插话：直接输入并发送；想打断：点停止</li>
+  </ol>
+
+  <h3 class="block">G.6 存一套做法（自定义工具）</h3>
+  <ol style="font-size:14.5px;color:var(--muted);line-height:1.9">
+    <li>设置 → 工具 → 右上角「新建工具」</li>
+    <li>填名字（如 <code>合并PDF</code>），进入详情页</li>
+    <li>编辑 <code>tool.md</code>：写清"什么时候用、怎么做、注意什么"</li>
+    <li>需要脚本就新建文件（如 <code>merge.py</code>），引用路径写相对名</li>
+    <li>回到聊天里说「用合并PDF处理这个目录」，模型会读那份说明</li>
+  </ol>
+
+  <h3 class="block">G.7 写一条规则</h3>
+  <ol style="font-size:14.5px;color:var(--muted);line-height:1.9">
+    <li>设置 → 自定义规则 → 新建</li>
+    <li>写一句<b>可判定</b>的话，例如「回答先给结论，再给理由」</li>
+    <li>保存后立刻生效，之后每一轮对话都受它约束</li>
+  </ol>
+  <div class="note">
+    规则和"记忆"的区别：规则是硬性约束（永远照做），记忆是关于你的事实（会被引用）。
+    不要把所有偏好都写成规则 —— 太多规则会互相打架。
+  </div>
+
+  <h3 class="block">G.8 让它记事</h3>
+  <ol style="font-size:14.5px;color:var(--muted);line-height:1.9">
+    <li>直接说「记一下：下周要去上海出差三天」</li>
+    <li>它会存进<b>笔记</b>（或计划，看内容性质）</li>
+    <li>之后问「我下周有什么安排」，它会翻出来回答</li>
+    <li>想改：设置 → 管理记忆 / 笔记页，逐条编辑或删除</li>
+  </ol>
+
+  <h3 class="block">G.9 开一个常驻聊天（autopilot）</h3>
+  <ol style="font-size:14.5px;color:var(--muted);line-height:1.9">
+    <li>在输入框里提到 <b>autopilot</b>（手打或从 @ 面板选）—— 这条聊天立刻变成常驻</li>
+    <li>点右上角圆按钮 → 出现 <b>Autopilot 文件</b></li>
+    <li>进去后点「新建」，填文件名（如 <code>check.sh</code>）与内容，保存</li>
+    <li>点那个文件名，把它设为<b>入口脚本</b></li>
+    <li>选间隔：10s / 30s / 60s / 5m / 30m，或点「自定义」输入 <code>45</code>、<code>5m</code>、<code>2h</code></li>
+    <li>打开上方「常驻运行」开关；想立刻验证就点脚本行的 <b>▶</b></li>
+    <li>侧边菜单的历史列表里，这条会话标题左边会出现<b>循环箭头图标</b></li>
+  </ol>
+
+  <h3 class="block">G.10 写一个能用的常驻脚本</h3>
+  <p class="sub">原则只有一条：<b>没事发生就不要有输出</b>。</p>
+  <pre><b>#!/bin/sh
+# 有情况才 echo，没情况直接 exit 0</b>
+value=$(curl -s "https://example.com/api/state" | jq -r '.value')
+[ "$value" = "ok" ] &amp;&amp; exit 0        <i># 正常 → 静默</i>
+echo "状态异常：$value"               <i># 异常 → 输出，模型会被叫醒</i></pre>
+  <table class="table">
+    <tr><th>输出情况</th><th>会发生什么</th></tr>
+    <tr><td>没有输出 / 只有空格</td><td>继续下一轮，模型完全不被调用</td></tr>
+    <tr><td>和上一轮一样</td><td>同上（这轮当作没变化）</td></tr>
+    <tr><td>和上一轮不同</td><td>内容交给模型，结论回到这个会话；应用在后台时另发通知</td></tr>
+  </table>
+
+  <h3 class="block">G.11 做一个主题包</h3>
+  <ol style="font-size:14.5px;color:var(--muted);line-height:1.9">
+    <li>设置 → UI 设置 → 外观 → 「主题包（HTML 界面）」</li>
+    <li>点「新建主题包」：填名字、选主题色、写 HTML（会自动预填一份能跑的示例）</li>
+    <li>保存后点它 → 立刻切过去；想回原生界面点「应用默认界面」</li>
+    <li>也可以点「从剪贴板导入（HTML / JSON）」，把别处复制的内容直接变成主题包</li>
+    <li>编辑时按 <b>?</b> 按钮可以看完整接口说明</li>
+  </ol>
+  <div class="note">
+    最快的方式是让 AI 写：直接说「把聊天界面做成深色极简，带思考折叠」，
+    它会生成一个主题包。写坏了切回默认界面即可，数据不受影响。
+  </div>
+
+  <h3 class="block">G.12 加一把锁</h3>
+  <ol style="font-size:14.5px;color:var(--muted);line-height:1.9">
+    <li>设置 → 密码与安全</li>
+    <li>输入密码两次（至少 4 位）→ 保存</li>
+    <li>在「保护范围」里逐个打开需要保护的项目</li>
+    <li>想用指纹 / 面部：打开「用指纹 / 面部解锁」（设备没有锁屏凭据时此项不可用）</li>
+    <li>忘记密码或者在别的设备上恢复：只能重设（密码不存明文，无法读回）</li>
+  </ol>
+
+  <h3 class="block">G.13 导出与换机</h3>
+  <ol style="font-size:14.5px;color:var(--muted);line-height:1.9">
+    <li>设置 → 存储 → 「导出备份」，选一个保存位置</li>
+    <li>新设备上装好后：设置 → 存储 → 「导入备份」，选那份文件</li>
+    <li>主题包也可以在列表里单独导出成 JSON，便于分享给朋友</li>
+  </ol>
+
+  <h3 class="block">G.14 看它到底做了什么</h3>
+  <ol style="font-size:14.5px;color:var(--muted);line-height:1.9">
+    <li>消息下方「思考 3.2s」点开 → 看完整推理过程</li>
+    <li>「工具 · N」点开 → 每一次调用的名字、参数、输出、耗时</li>
+    <li>右上角圆按钮 → 工具调用 → 「性能」页 → 每一步花了多久、哪个最慢</li>
+    <li>命令正在跑时，会出现<b>终端</b>入口，可以看实时输出</li>
+  </ol>
+
+  <h3 class="block">G.15 常见操作速查</h3>
+  <table class="table">
+    <tr><th>我想…</th><th>怎么做</th></tr>
+    <tr><td>让它别再自动跑</td><td>Autopilot 文件 → 关掉「常驻运行」</td></tr>
+    <tr><td>换掉某条回复</td><td>长按该条 → 重新生成</td></tr>
+    <tr><td>改自己说过的话</td><td>长按自己那条 → 修改 → 重新发</td></tr>
+    <tr><td>让回答更简短</td><td>写一条规则，或直接说"一句话回答"</td></tr>
+    <tr><td>清掉某条会话</td><td>侧边菜单 → 长按 / 多选 → 删除</td></tr>
+    <tr><td>看还剩多少额度</td><td>设置 → 模型设置 → 档案详情（取决于服务商是否提供）</td></tr>
+    <tr><td>换个界面风格</td><td>设置 → UI 设置 → 外观 → 主题色 / 主题包</td></tr>
+  </table>
+</section>
+
+<!-- ================= 11 ================= -->
+<section id="cases">
+  <h2><span class="num">11</span>实例</h2>
+  <p class="sub">每一条都是"一句话交出去，它自己完成"。</p>
+
+  <div class="example">
+    <p class="q"><span>线索整理</span>把这批截图里的表格整理成一个 Excel。</p>
+    <ol>
+      <li>逐张读图，<b>OCR</b> 认出表格的行列</li>
+      <li>在 Linux 里合并成 csv，转成 xlsx</li>
+      <li>结果以<b>文件卡片</b>出现，点开就是表格应用</li>
+    </ol>
+    <p class="out">产出：合并.xlsx（37 行 × 6 列）</p>
+  </div>
+
+  <div class="example">
+    <p class="q"><span>每日简报</span>每天早上八点，把天气和三条新闻发给我。</p>
+    <ol>
+      <li>建一个 <b>08:00</b> 的定时任务</li>
+      <li>到点抓天气与新闻，让模型压成三条</li>
+      <li>你在后台也会收到<b>系统通知</b>，点开就是结果</li>
+    </ol>
+    <p class="out">早上 8:00 · 晴 24~31℃ · 三条要闻已就绪</p>
+  </div>
+
+  <div class="example">
+    <p class="q"><span>盯梢</span>盯一下这个网站，有新的就告诉我。</p>
+    <ol>
+      <li>写成常驻脚本，<b>每 5 分钟</b>取一次</li>
+      <li>没变化 → 静默跳过，不花 token</li>
+      <li>出现新条目 → 读全文写摘要，标红点提醒</li>
+    </ol>
+    <p class="out">后台 · 新增 2 条，已摘要，点开查看</p>
+  </div>
+
+  <div class="example">
+    <p class="q"><span>批量处理</span>把这段录音转成文字，再按段落分成三条笔记。</p>
+    <ol>
+      <li>识别音频内容（或读字幕文件）</li>
+      <li>按语义切段，给每段起小标题</li>
+      <li>逐条写进<b>笔记</b>，在会话里给出目录</li>
+    </ol>
+  </div>
+
+  <div class="example">
+    <p class="q"><span>界面改造</span>把聊天界面做成深色极简，带思考折叠。</p>
+    <ol>
+      <li>模型写一个<b>主题包</b>（整页 HTML + CSS + JS）</li>
+      <li>你切过去看效果，不满意就让它改细节</li>
+      <li>不喜欢随时切回原生界面，包还在列表里</li>
+    </ol>
+  </div>
+
+  <div class="example">
+    <p class="q"><span>危险操作</span>清理下载目录里三个月前的安装包。</p>
+    <ol>
+      <li>先列出将删除的文件与总大小</li>
+      <li>动手前调用<b>请求验证</b>，你确认才执行</li>
+      <li>删完给报告；你拒绝就原地停下，一个文件都不动</li>
+    </ol>
+  </div>
+
+  <div class="example">
+    <p class="q"><span>跨应用</span>打开外卖应用，找到上次点的那家，按原样再下一单（到付款前停下）。</p>
+    <ol>
+      <li>用<b>无障碍</b>读控件树定位搜索框与店铺</li>
+      <li>连续手势滑动、点击，逐屏确认</li>
+      <li>到支付前停住，把购物车截图发回来等你决定</li>
+    </ol>
+  </div>
+
+  <div class="example">
+    <p class="q"><span>编码</span>用 Python 把这个 csv 按城市汇总，画出柱状图。</p>
+    <ol>
+      <li>读文件、清理缺失值</li>
+      <li>跑一段 pandas，输出汇总表</li>
+      <li>生成图表，用<b>图片卡片</b>直接显示</li>
+    </ol>
+  </div>
+
+  <div class="example">
+    <p class="q"><span>长文</span>把这篇英文论文读一遍，写一页中文摘要，列出三条局限。</p>
+    <ol>
+      <li>抓正文 → 分段读取</li>
+      <li>按"问题 / 方法 / 结果 / 结论"重组</li>
+      <li>输出摘要，并把原文存进<b>笔记</b>备查</li>
+    </ol>
+  </div>
+
+  <div class="example">
+    <p class="q"><span>协作</span>拉三个 AI 一起评审这个方案：一个挑逻辑，一个挑实现，一个挑成本。</p>
+    <ol>
+      <li>建一个<b>群聊</b>，三个人设各配一个模型</li>
+      <li>依次 @ 发言，允许互相反驳</li>
+      <li>你只做裁决，最后让它汇总分歧点</li>
+    </ol>
+  </div>
+</section>
+
+<!-- ================= 12 ================= -->
+<section id="map">
+  <h2><span class="num">12</span>入口对照</h2>
+  <p class="sub">想改什么，去哪找。</p>
+  <table class="table">
+    <tr><th>想做的事</th><th>位置</th></tr>
+    <tr><td>换模型 / 加档案</td><td>侧边菜单 → 设置 → 模型设置</td></tr>
+    <tr><td>换配色 / 字号</td><td>设置 → UI 设置 → 外观</td></tr>
+    <tr><td>换聊天界面</td><td>设置 → UI 设置 → 外观 → 主题包</td></tr>
+    <tr><td>加锁</td><td>设置 → 密码与安全</td></tr>
+    <tr><td>开权限</td><td>设置 → 能力扩展</td></tr>
+    <tr><td>存一套做法</td><td>设置 → 工具</td></tr>
+    <tr><td>写约束</td><td>设置 → 自定义规则</td></tr>
+    <tr><td>管记忆</td><td>设置 → 管理记忆</td></tr>
+    <tr><td>自动化脚本</td><td>聊天右上角 → Autopilot 文件</td></tr>
+    <tr><td>看耗时</td><td>聊天右上角 → 工具调用 → 性能</td></tr>
+    <tr><td>导出备份</td><td>设置 → 存储 → 导出备份</td></tr>
+  </table>
+</section>
+
+<footer>
+  <p>MindClaw · 完整功能手册与实例<br>
+  本页为静态介绍，示例中的域名、路径与命令均为示意。</p>
+</footer>
+
+</div>
+</body>
+</html>
