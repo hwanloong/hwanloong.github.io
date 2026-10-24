@@ -338,6 +338,101 @@
     它会自己拆步骤、调工具、看结果，再把结论放回你面前。
   </p>
 
+  <h3 class="block">2.0 一屏之间的秩序</h3>
+  <p class="sub">
+    聊天页只做三件事：让你一眼看到"我在哪、它说了什么、我接下来能做什么"。
+    所有装饰都为这三件事让路 —— 没有多余的栏、没有抢注意力的边框、没有突然跳出来的面板。
+  </p>
+
+  <div class="grid">
+    <div class="card">
+      <span class="tag">留白</span>
+      <h3>顶栏是"浮"的，不是"压"的</h3>
+      <p>没有整条背板、没有发丝线，只有返回与更多两枚圆钮浮在内容上。消息从它们身后穿过去，屏幕从上到下是一整块连续的纸面。</p>
+    </div>
+    <div class="card">
+      <span class="tag">层级</span>
+      <h3>一眼分得清谁在说</h3>
+      <p>你的话靠右、气泡收紧；它的回答靠左、占据整行阅读宽度。工具过程收成一行摘要，正文永远是视觉重心。</p>
+    </div>
+    <div class="card">
+      <span class="tag">动效</span>
+      <h3>形变，而不是切换</h3>
+      <p>输入框收起时是<b>同一个玻璃面</b>在缩成圆：圆角、宽度、透明度连续变化；展开时内容不会"先扁一下再弹开"。</p>
+    </div>
+    <div class="card">
+      <span class="tag">材质</span>
+      <h3>只有一层玻璃</h3>
+      <p>收起态的圆、模型胶囊、工具圆共用同一层玻璃与描边。并排放在一起，看不出"这个是组件、那个是画的"。</p>
+    </div>
+  </div>
+
+  <h3 class="block">2.0.1 一屏的排布</h3>
+  <table class="table">
+    <tr><th>区域</th><th>里面有什么</th><th>为什么这样排</th></tr>
+    <tr><td>顶部</td><td>返回、会话名、更多</td><td>只有两枚圆钮，没有背景栏；会话名只占一行，不参与抢视线</td></tr>
+    <tr><td>消息流</td><td>用户气泡、AI 正文、工具摘要</td><td>你靠右、它靠左；正文占满阅读宽度，工具过程默认折叠</td></tr>
+    <tr><td>输入区</td><td>玻璃框、附件、模型胶囊、发送</td><td>一整块玻璃，不切成好几个小控件；模型胶囊就是当前状态</td></tr>
+    <tr><td>浮层</td><td>引用条、模型选择、工具详情</td><td>用到才出现，出现时也只占一层，不改变页面结构</td></tr>
+  </table>
+
+  <h3 class="block">2.0.2 把输入框收起来</h3>
+  <p class="sub">
+    读长回答时，输入框是最大的一块"不属于内容"的东西。
+    它可以在一个手势里缩成一枚 46 像素的圆 —— 不消失、不换位置，只是收起身形。
+  </p>
+  <table class="table">
+    <tr><th>操作</th><th>结果</th></tr>
+    <tr><td>在输入框上向下滑</td><td>跟着手指压扁；过半松手收起，不过半回弹 —— 和"拖到一半"的直觉一致</td></tr>
+    <tr><td>点左下角的小箭头</td><td>直接收起。图标在框外、无底色，像页面上的一个注脚</td></tr>
+    <tr><td>点收起后的圆</td><td>展开，光标回到上次的位置，输入内容一个字不丢</td></tr>
+    <tr><td>输入框里有字 / 多行时</td><td>下滑改为滚动文字，不会误收；需要收起就点小箭头</td></tr>
+    <tr><td>横屏时</td><td>输入区固定展开 —— 右侧工具表已经占了半屏，再收就没地方输入</td></tr>
+  </table>
+
+  <div class="mock">
+    <div class="screen">
+      <div class="bar"><div class="dot"></div><div class="grow"></div><div class="dot"></div></div>
+      <div class="label">阅读态 · 输入框收成一枚圆</div>
+      <div class="bubble me">这段迁移方案有什么风险？</div>
+      <div class="tool">思考 2.1s　·　执行了 4 步 ▸</div>
+      <div class="bubble ai">主要风险在回滚窗口：新旧两套写入同时存在时，<br>有大概三分钟的数据会落在旧表里。</div>
+      <div class="rowline" style="padding:0 12px 12px;align-items:center">
+        <span class="chip" style="width:34px;height:34px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;padding:0">⌨</span>
+        <span class="chip">DeepSeek 对话</span>
+        <span class="chip" style="width:34px;height:34px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;padding:0;margin-left:auto">◎</span>
+      </div>
+    </div>
+  </div>
+  <p class="mockcap">阅读态：输入框缩成左边的圆；模型胶囊与工具圆仍在，随时可以展开或切换。</p>
+
+  <div class="note">
+    收起不是为了"藏功能"，而是把整屏还给正在读的那段文字。
+    收起态的模型胶囊和工具圆仍然在：换模型、看它在忙什么，都不用先展开输入框。
+  </div>
+
+  <h3 class="block">2.0.3 沉浸读一段长文</h3>
+  <p class="sub">三个动作叠加，屏幕会安静下来：</p>
+  <table class="table">
+    <tr><th>动作</th><th>效果</th></tr>
+    <tr><td>① 收起输入框</td><td>腾出底部一整块，正文可以一直读到屏幕边缘</td></tr>
+    <tr><td>② 折叠工具步骤</td><td>多步执行收成「执行了 N 步」，正文不被十几行日志推走</td></tr>
+    <tr><td>③ 打开极简过程</td><td>连进度行也不出现，只剩结论 —— 适合从头读一份报告</td></tr>
+  </table>
+  <p class="sub">
+    这时留在屏幕上的只有：会话名（一行字）、正文、以及需要时随时能叫回来的控件。
+    公式宽了横向滚动，图片跟着文字流，代码块保留缩进 —— 阅读不会被"排版"打断。
+  </p>
+  <p class="sub">
+    正文的阅读宽度、行高与段间距按中文排版调过：一行不会长到需要转头，
+    段落之间有呼吸，代码块与表格两侧留出安全边距。精致不是加装饰，
+    而是把每一行放到它该在的位置。
+  </p>
+  <div class="note">
+    ② 默认开启；③ 在 <b>设置 → 性能 → 工具步骤过程</b> 里。
+    两个都关掉时，每一步工具调用都会平铺成一行 —— 调试时有用，正常阅读时太吵。
+  </div>
+
   <h3 class="block">2.1 多模型</h3>
   <p class="sub">
     一个任务用最合适的模型。闲聊用快的、写码用强的、看图用多模态的 ——
