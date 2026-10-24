@@ -193,6 +193,7 @@
       <span class="pill">可换 UI</span><span class="pill">密码保护</span>
       <span class="pill">Markdown / 公式</span><span class="pill">富卡片</span>
       <span class="pill">生图 / 视频</span><span class="pill">MCP</span>
+      <span class="pill">真 RAG</span>
       <span class="pill">自学习</span><span class="pill">横屏工作流</span>
       <span class="pill">数据可导出</span>
     </div>
@@ -660,6 +661,7 @@
     <tr><td>工具（Tool）</td><td>文件夹式知识库：<code>tool.md</code> 写做法，旁边放脚本与模板</td></tr>
     <tr><td>插件</td><td>用 shell / HTTP 模板新增一个可调用工具</td></tr>
     <tr><td>MCP</td><td>接入远程 MCP 服务器，把它的工具原样交给模型</td></tr>
+    <tr><td>知识库（RAG）</td><td>文档切片入库，按问题检索相关片段，带出处回答</td></tr>
     <tr><td>主题包</td><td>生成 / 修改 / 切换聊天界面的整页 HTML</td></tr>
     <tr><td>提醒</td><td>前台只标红点，后台额外发系统通知</td></tr>
     <tr><td>请求验证</td><td>危险动作前弹一次密码 / 指纹，你拒绝它就停</td></tr>
@@ -967,7 +969,7 @@ function send(text) {
     <div class="card"><h3><a href="#mcp">MCP 服务器</a></h3><p>接入远程 MCP，把服务器声明的工具原样交给 AI；支持工具发现、只读标注与自动重连。</p></div>
     <div class="card"><h3><a href="#learning">自学习</a></h3><p>AI 把走过的弯路、犯过的错、学到的技能写成自己的操作笔记，每轮都带上。</p></div>
     <div class="card"><h3><a href="#typo">字体与横屏</a></h3><p>可换字体文件、全局字号与横屏字号；横屏是左右分栏 + 工具调用表的工作流。</p></div>
-    <div class="card"><h3><a href="#knowbase">知识库（工具 / Tool）</a></h3><p>一个工具一个文件夹：<code>tool.md</code> 写做法，旁边放脚本与模板；模型按需读取。</p></div>
+    <div class="card"><h3><a href="#knowbase">知识库（真 RAG）</a></h3><p>导入文档 → 切片 → 向量检索 → 带出处回答；PDF / Word / Excel / 网页 / 图片都能进。另有工具文件夹放成套做法。</p></div>
     <div class="card"><h3><a href="#scale">内容尺度</a></h3><p>TeenSpace 三档：成人内容、政治议题、题目查询的回答尺度。它约束表达，不是内容过滤器。</p></div>
   </div>
 </section>
@@ -1070,7 +1072,7 @@ function send(text) {
   <h2><span class="num">12</span>联网、识图与知识库</h2>
   <p class="sub">
     会查、会看，还会读你自己的资料。搜索多通道自动降级；识图优先走多模态、
-    失败才 OCR 并如实说明；你的工具文件夹与工作空间，就是它随取随用的知识库。
+    失败才 OCR 并如实说明；私有文档则进真 RAG 知识库，按问题召回片段、带出处回答。
   </p>
 
   <h3 class="block">12.1 联网搜索</h3>
@@ -1114,12 +1116,12 @@ function send(text) {
     </div>
   </div>
 
-  <h3 class="block">12.3 知识库：把资料和做法放进「工具」</h3>
-  <p class="sub">把做法和资料放成文件夹，模型需要时才读 —— 不是一次性塞进上下文。</p>
+  <h3 class="block">12.3 工具（Tool）：把做法做成文件夹</h3>
+  <p class="sub">把做法、脚本和模板放成文件夹，模型需要时才读 —— 一种轻量的"成套资料"。</p>
   <p class="path">路径：<b>设置 → 关于 → 能力扩展 → 工具</b></p>
   <p class="sub">
     一个工具就是一个文件夹：<code>tool.md</code> 写"这类事怎么做"，旁边可以放脚本、模板、参考文件。
-    模型觉得相关时才去读 —— 它既是"技能"，也是一份可检索的知识库。
+    模型觉得相关时才去读 —— 它既是"技能"，也是一份可翻查的做法库。
   </p>
   <table class="table">
     <tr><th>能放什么</th><th>例子</th></tr>
@@ -1129,9 +1131,72 @@ function send(text) {
     <tr><td>与规则的区别</td><td>规则永远生效（约束）；工具按需取用（做法与资料）</td></tr>
   </table>
   <div class="note">
-    工作空间里的文件同样是知识库的一部分：模型能直接读写它们，
-    不需要你把内容复制进对话。长期有效的事实放记忆，操作经验放自学习，
-    成套做法放工具 —— 三者别混。
+    工作空间里的文件模型能直接读写，不需要你把内容复制进对话。
+    长期有效的事实放记忆，操作经验放自学习，成套做法放工具 —— 三者别混。
+    如果要"按问题检索大量文档"，用下面的真 RAG 知识库。
+  </div>
+
+  <h3 class="block">12.4 知识库（真 RAG）</h3>
+  <p class="sub">
+    把文档真正"入库"：先解析、再切片、再向量化。提问时只召回最相关的几个片段
+    （可再精排），交给聊天模型回答，并标出来源 —— 不是把整篇塞进上下文。
+  </p>
+  <p class="path">路径：<b>设置 → 自定义设置 → 数据与扩展 → 知识库</b></p>
+
+  <pre><b>入库</b>  文档 → 解析（PDF/Word/Excel/网页/图片）→ 切片 → Embedding → 向量库
+<b>提问</b>  Query → Query Embedding → 向量召回 Top-K → Rerank → 拼接片段
+<b>回答</b>  聊天模型只基于片段作答，用【1】【2】标出来源</pre>
+
+  <h4 class="block">真 RAG 与"伪 RAG"</h4>
+  <table class="table">
+    <tr><th>维度</th><th>伪 RAG（整篇直塞）</th><th>真 RAG（检索增强）</th></tr>
+    <tr><td>切分与索引</td><td>不切，全文进 context</td><td>切片 + 向量化入库</td></tr>
+    <tr><td>检索</td><td>没有，全靠上下文窗口</td><td>语义 + 关键词混合召回</td></tr>
+    <tr><td>精排</td><td>无</td><td>可选 Cross-Encoder 二次排序</td></tr>
+    <tr><td>长文档</td><td>受窗口限制，超了就丢</td><td>不受限，按需召回</td></tr>
+    <tr><td>可信度</td><td>容易混入无关内容</td><td>答案可标出处，便于核对</td></tr>
+  </table>
+  <table class="table">
+    <tr><th>环节</th><th>做的事</th></tr>
+    <tr><td>多解析器</td><td>PDF 文本层、Word、Excel、CSV、Markdown、HTML、图片 OCR、网页正文</td></tr>
+    <tr><td>切片</td><td>按标题与段落切，700 字上限 + 120 字重叠；每片带标题路径</td></tr>
+    <tr><td>Embedding</td><td>OpenAI 兼容 <code>/embeddings</code>；地址 / Key 留空时复用当前模型档案</td></tr>
+    <tr><td>向量检索</td><td>余弦相似度召回 Top-K，并与 BM25 关键词分混合排序</td></tr>
+    <tr><td>精排</td><td>可选的 <code>/rerank</code>（BGE / Jina / Cohere 形状）；失败自动退回混合分</td></tr>
+    <tr><td>生成</td><td>聊天 AI 根据片段回答，用【1】【2】标出来源；片段不够就直说没有</td></tr>
+  </table>
+  <div class="grid">
+    <div class="card">
+      <h3>没配向量模型也能用</h3>
+      <p>自动退回关键词 BM25；配置 Embedding 后点「重建向量化」，语义召回就会接管。</p>
+    </div>
+    <div class="card">
+      <h3>数据在本地</h3>
+      <p>切片、向量和索引都存在应用私有目录；删文档立即移出索引，不上传第三方服务器。</p>
+    </div>
+    <div class="card">
+      <h3>可溯源</h3>
+      <p>检索结果带文档名、标题路径与片段序号，模型回答能标出【1】【2】，便于核对原文。</p>
+    </div>
+  </div>
+
+  <h4 class="block">五步用起来</h4>
+  <ol style="font-size:14.5px;color:var(--muted);line-height:1.9">
+    <li>设置 → 自定义设置 → 数据与扩展 → 知识库 → 右上角新建</li>
+    <li>导入文件（PDF / Word / Excel / CSV / Markdown / 图片）或从网址抓正文</li>
+    <li>点「检索设置」，填 Embedding 模型名；地址和 Key 留空就复用当前模型档案</li>
+    <li>回到库页点「重建向量化」；没有向量模型时这一步可以跳过，先用关键词检索</li>
+    <li>在「检索测试」里问一个库里应该有的问题，能召回正确片段即可回聊天里提问</li>
+  </ol>
+  <pre><b>你：</b>根据知识库，差旅报销需要哪些材料？
+
+<b>它：</b>（knowledge search → 召回 3 段 → 只基于片段回答）
+     需要发票、行程单和审批单【1】；金额超过 5000 还要附上说明【2】。
+     知识库里没有提到截止时间，建议向财务确认。</pre>
+
+  <div class="note">
+    知识库不是"把整个文件夹塞给模型"：问什么搜什么，只把最相关的几段送进上下文。
+    长文档因此不受上下文窗口限制，答案也有出处。没有命中时它会直说没有，不会编。
   </div>
 </section>
 
@@ -1784,7 +1849,7 @@ flutter_inappwebview.callHandler('send', text);</pre>
     <li>想插话：直接输入并发送；想打断：点停止</li>
   </ol>
 
-  <h3 class="block">G.6 存一套做法（自定义工具 / 知识库）</h3>
+  <h3 class="block">G.6 存一套做法（自定义工具 Tool）</h3>
   <ol style="font-size:14.5px;color:var(--muted);line-height:1.9">
     <li>设置 → 关于 → 能力扩展 → 工具 → 右上角「新建工具」</li>
     <li>填名字（如 <code>合并PDF</code>），进入详情页</li>
@@ -1889,6 +1954,7 @@ echo "状态异常：$value"               <i># 异常 → 输出，模型会被
     <tr><td>看缓存 / 上下文占用</td><td>聊天右上角 → 工具调用 → 性能</td></tr>
     <tr><td>让 AI 别重复踩坑</td><td>设置 → 自定义设置 → 自学习（开关 + 查看）</td></tr>
     <tr><td>接一个外部工具服务</td><td>设置 → 自定义设置 → 数据与扩展 → MCP 服务器</td></tr>
+    <tr><td>让 AI 查我的文档</td><td>设置 → 自定义设置 → 数据与扩展 → 知识库</td></tr>
     <tr><td>把聊天和工具过程并排看</td><td>把手机横过来</td></tr>
     <tr><td>让长回答更好读</td><td>直接说"标出重点"，或自己选中后选颜色</td></tr>
   </table>
@@ -1963,6 +2029,22 @@ echo "状态异常：$value"               <i># 异常 → 输出，模型会被
     <li>要推导或公式：直接让它写 LaTeX，消息里会渲染成公式</li>
     <li>复习：把要点让它画成思维导图，或在计划里建复习待办</li>
   </ol>
+
+  <h3 class="block">G.24 建一个知识库（真 RAG）</h3>
+  <ol style="font-size:14.5px;color:var(--muted);line-height:1.9">
+    <li>设置 → 自定义设置 → 数据与扩展 → 知识库</li>
+    <li>右上角「+」新建，起一个能看出用途的名字（如「产品文档」）</li>
+    <li>进库 → 右上角导入文件（可多选）或「从网址导入」</li>
+    <li>点「检索设置」：填 Embedding 模型名（如 <code>text-embedding-3-small</code> / <code>bge-m3</code>），地址与 Key 可留空复用当前档案</li>
+    <li>保存后回库页点「重建向量化」；没配模型时先用关键词检索也能跑</li>
+    <li>在「检索测试」里问一个库内问题，确认能召回正确文档与片段</li>
+    <li>回聊天直接问「根据知识库…」；它会先 search，再用【1】【2】标出来源</li>
+    <li>换文档 / 换模型：删掉旧文档重新导入，或点「重建向量化」</li>
+  </ol>
+  <div class="note">
+    扫描件 / 双栏 PDF 抽不出文本时会明确提示：先转成文本，或把页面截图后作为图片导入走 OCR。
+    Embedding 服务不可用时，文档仍会入库并按关键词检索，只是语义召回弱一些。
+  </div>
 </section>
 
 <!-- ================= 11 ================= -->
@@ -2087,13 +2169,24 @@ echo "状态异常：$value"               <i># 异常 → 输出，模型会被
   </div>
 
   <div class="example">
-    <p class="q"><span>外部系统</span>把公司知识库接进来，之后直接问它里面的流程。</p>
+    <p class="q"><span>MCP</span>把公司内部系统的工具接进来，之后直接让它查流程。</p>
     <ol>
       <li>设置 → 数据与扩展 → <b>MCP 服务器</b>，填地址与 Token</li>
       <li>自动发现工具；只读工具直接跑，写操作弹确认</li>
       <li>之后直接问"报销要走哪几步"，它会调用对应工具并给出处</li>
     </ol>
     <p class="out">工具列表缓存到本地，服务器暂时不可用时仍能看到，调用时才报错</p>
+  </div>
+
+  <div class="example">
+    <p class="q"><span>私有资料</span>把公司的制度文档放进知识库，之后直接问报销要哪些材料。</p>
+    <ol>
+      <li>新建知识库，导入 PDF / Word（可一次多选）</li>
+      <li>填 Embedding 模型 → 重建向量化 → 在「检索测试」确认能召回正确片段</li>
+      <li>回聊天问「根据知识库，差旅报销需要哪些材料？」</li>
+      <li>它调用 <b>knowledge search</b>，只基于召回片段回答，并用【1】【2】标出来源</li>
+    </ol>
+    <p class="out">文档里没写的部分会直说"没有提到"，不会拿常识补成文档内容</p>
   </div>
 
   <div class="example">
@@ -2148,6 +2241,7 @@ echo "状态异常：$value"               <i># 异常 → 输出，模型会被
     <tr><td>管记忆</td><td>设置 → 自定义设置 → 记忆</td></tr>
     <tr><td>看自学习</td><td>设置 → 自定义设置 → 自学习</td></tr>
     <tr><td>接 MCP</td><td>设置 → 自定义设置 → 数据与扩展 → MCP 服务器</td></tr>
+    <tr><td>建知识库 / 私有资料问答</td><td>设置 → 自定义设置 → 数据与扩展 → 知识库</td></tr>
     <tr><td>自动化脚本</td><td>聊天右上角 → Autopilot 文件夹</td></tr>
     <tr><td>看缓存 / 上下文 / 耗时</td><td>聊天右上角 → 工具调用 → 性能</td></tr>
     <tr><td>导出备份</td><td>设置 → 自定义设置 → 数据与扩展 → 导出备份</td></tr>
